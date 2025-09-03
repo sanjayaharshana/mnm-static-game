@@ -12,19 +12,25 @@ class CandyCrushGame {
         this.gameStarted = false;
         this.processingTimeout = null; // Add timeout for processing
         
+        // Audio system
+        this.backgroundMusic = null;
+        this.isMusicPlaying = false;
+        this.musicVolume = 0.3; // 30% volume
+        
+        // Sound effects
+        this.moveSound = null;
+        this.soundVolume = 0.4; // 40% volume for sound effects
+        
+        // M&M Chocolate Colors - using classic M&M colors
         this.candyTypes = [
-            { emoji: '🍎', color: 'red' },
-            { emoji: '🍊', color: 'orange' },
-            { emoji: '🍋', color: 'yellow' },
-            { emoji: '🍇', color: 'purple' },
-            { emoji: '🍓', color: 'red' },
-            { emoji: '🍑', color: 'orange' },
-            { emoji: '🍒', color: 'red' },
-            { emoji: '🥝', color: 'green' },
-            { emoji: '🍍', color: 'yellow' },
-            { emoji: '🥭', color: 'orange' },
-            { emoji: '🍉', color: 'green' },
-            { emoji: '🍌', color: 'yellow' }
+            { emoji: '🔴', color: 'red', name: 'Red M&M' },
+            { emoji: '🟡', color: 'yellow', name: 'Yellow M&M' },
+            { emoji: '🟢', color: 'green', name: 'Green M&M' },
+            { emoji: '🔵', color: 'blue', name: 'Blue M&M' },
+            { emoji: '🟠', color: 'orange', name: 'Orange M&M' },
+            { emoji: '🟣', color: 'purple', name: 'Purple M&M' },
+            { emoji: '🟤', color: 'brown', name: 'Brown M&M' },
+            { emoji: '⚪', color: 'white', name: 'White M&M' }
         ];
         
         this.init();
@@ -47,9 +53,18 @@ class CandyCrushGame {
         this.resetBtn.addEventListener('click', () => this.resetGame());
         this.playAgainBtn.addEventListener('click', () => this.hideWinningPopup());
         this.shareBtn.addEventListener('click', () => this.shareScore());
+        
+        // Add music button event listener
+        const musicBtn = document.getElementById('musicBtn');
+        if (musicBtn) {
+            musicBtn.addEventListener('click', () => this.toggleMusic());
+        }
         this.createBoard();
         this.setupEventListeners();
         this.updateTimerDisplay();
+        
+        // Initialize audio system
+        this.initAudio();
         
         // Add debug keyboard shortcuts
         document.addEventListener('keydown', (e) => {
@@ -353,6 +368,7 @@ class CandyCrushGame {
         if (matches.length > 0) {
             this.moves++;
             this.movesElement.textContent = this.moves;
+            this.playMoveSound(); // Play move sound effect
             await this.processMatches(matches);
         } else {
             console.log('No matches found, swapping back');
@@ -682,6 +698,9 @@ class CandyCrushGame {
         this.isProcessing = false;
         this.clearProcessingTimeout();
         
+        // Stop music
+        this.stopBackgroundMusic();
+        
         // Reset game state
         this.score = 0;
         this.moves = 0;
@@ -709,6 +728,10 @@ class CandyCrushGame {
         if (this.gameStarted) return;
         
         this.gameStarted = true;
+        // Only try to play music if audio file is available
+        if (this.backgroundMusic) {
+            this.playBackgroundMusic();
+        }
         this.timerInterval = setInterval(() => {
             this.timeLeft--;
             this.updateTimerDisplay();
@@ -742,11 +765,12 @@ class CandyCrushGame {
     
     gameOver() {
         this.stopTimer();
+        this.stopBackgroundMusic(); // Stop music when game ends
         this.isProcessing = true;
         
         // Show game over message
         setTimeout(() => {
-            alert(`⏰ Time's up! Your final score: ${this.score} points in ${this.moves} moves!`);
+            alert(`⏰ Time's up! Your final M&M score: ${this.score} points in ${this.moves} moves!`);
             this.resetGame();
         }, 500);
     }
@@ -820,8 +844,9 @@ class CandyCrushGame {
         document.getElementById('finalTime').textContent = `${this.timeLeft}s`;
         this.efficiencyElement.textContent = efficiency;
         
-        // Stop timer
+        // Stop timer and music
         this.stopTimer();
+        this.stopBackgroundMusic();
         
         // Show popup with animation
         this.winningPopup.classList.add('show');
@@ -836,18 +861,18 @@ class CandyCrushGame {
     }
     
     shareScore() {
-        const text = `🎉 I scored ${this.score} points in Candy Crush Clone! Can you beat my score? 🍬`;
+        const text = `🍫 I scored ${this.score} points in M&M Chocolate Match! Can you beat my score? 🍫`;
         
         if (navigator.share) {
             navigator.share({
-                title: 'Candy Crush Clone Score',
+                title: 'M&M Chocolate Match Score',
                 text: text,
                 url: window.location.href
             });
         } else {
             // Fallback: copy to clipboard
             navigator.clipboard.writeText(text).then(() => {
-                alert('Score copied to clipboard!');
+                alert('M&M Score copied to clipboard!');
             }).catch(() => {
                 alert(text);
             });
@@ -855,7 +880,7 @@ class CandyCrushGame {
     }
     
     createConfetti() {
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#a55eea'];
+        const colors = ['#FF0000', '#FFD700', '#00FF00', '#0000FF', '#FFA500', '#800080', '#8B4513', '#FFFFFF'];
         
         for (let i = 0; i < 50; i++) {
             setTimeout(() => {
@@ -877,6 +902,155 @@ class CandyCrushGame {
                     confetti.remove();
                 }, 5000);
             }, i * 100);
+        }
+    }
+    
+    // Audio System Methods
+    initAudio() {
+        try {
+            // Try to load the background music file
+            this.backgroundMusic = new Audio('background_music.mp3');
+            this.backgroundMusic.loop = true;
+            this.backgroundMusic.volume = this.musicVolume;
+            this.backgroundMusic.preload = 'auto';
+            
+            // Add error handling for missing file
+            this.backgroundMusic.addEventListener('error', (e) => {
+                console.warn('Background music file not found. Audio will be disabled.');
+                this.backgroundMusic = null;
+                this.updateMusicButtonState();
+            });
+            
+            // Add load success handler
+            this.backgroundMusic.addEventListener('canplaythrough', () => {
+                console.log('Audio system initialized successfully');
+            });
+            
+        } catch (error) {
+            console.error('Failed to initialize audio:', error);
+            this.backgroundMusic = null;
+            this.updateMusicButtonState();
+        }
+        
+        // Initialize move sound effect
+        this.initMoveSound();
+    }
+    
+    playBackgroundMusic() {
+        if (this.backgroundMusic && !this.isMusicPlaying) {
+            this.backgroundMusic.play().then(() => {
+                this.isMusicPlaying = true;
+                console.log('Background music started');
+                this.updateMusicButtonState();
+            }).catch(error => {
+                console.error('Failed to play background music:', error);
+                // If play fails, disable audio system
+                this.backgroundMusic = null;
+                this.updateMusicButtonState();
+            });
+        }
+    }
+    
+    pauseBackgroundMusic() {
+        if (this.backgroundMusic && this.isMusicPlaying) {
+            this.backgroundMusic.pause();
+            this.isMusicPlaying = false;
+            console.log('Background music paused');
+            this.updateMusicButtonState();
+        }
+    }
+    
+    stopBackgroundMusic() {
+        if (this.backgroundMusic) {
+            this.backgroundMusic.pause();
+            this.backgroundMusic.currentTime = 0;
+            this.isMusicPlaying = false;
+            console.log('Background music stopped');
+            this.updateMusicButtonState();
+        }
+    }
+    
+    setMusicVolume(volume) {
+        this.musicVolume = Math.max(0, Math.min(1, volume));
+        if (this.backgroundMusic) {
+            this.backgroundMusic.volume = this.musicVolume;
+        }
+    }
+    
+    toggleMusic() {
+        // If no audio file is available, show message
+        if (!this.backgroundMusic) {
+            alert('🎵 Background music file not found!\n\nPlease add a file named "background_music.mp3" to the same folder as your game files.');
+            return;
+        }
+        
+        if (this.isMusicPlaying) {
+            this.pauseBackgroundMusic();
+        } else {
+            this.playBackgroundMusic();
+        }
+    }
+    
+    updateMusicButtonState() {
+        const musicBtn = document.getElementById('musicBtn');
+        if (musicBtn) {
+            if (!this.backgroundMusic) {
+                // No audio file available
+                musicBtn.textContent = '❌ No Music';
+                musicBtn.classList.add('muted');
+                musicBtn.title = 'Background music file not found';
+            } else if (this.isMusicPlaying) {
+                // Music is playing
+                musicBtn.textContent = '🔊 Music';
+                musicBtn.classList.remove('muted');
+                musicBtn.title = 'Click to pause music';
+            } else {
+                // Music is paused
+                musicBtn.textContent = '🔇 Music';
+                musicBtn.classList.add('muted');
+                musicBtn.title = 'Click to play music';
+            }
+        }
+    }
+    
+    // Move Sound Effect Methods
+    initMoveSound() {
+        try {
+            this.moveSound = new Audio('moves_sound.mp3');
+            this.moveSound.volume = this.soundVolume;
+            this.moveSound.preload = 'auto';
+            
+            // Add error handling for missing move sound file
+            this.moveSound.addEventListener('error', (e) => {
+                console.warn('Move sound file not found. Sound effects will be disabled.');
+                this.moveSound = null;
+            });
+            
+            // Add load success handler
+            this.moveSound.addEventListener('canplaythrough', () => {
+                console.log('Move sound effect initialized successfully');
+            });
+            
+        } catch (error) {
+            console.error('Failed to initialize move sound:', error);
+            this.moveSound = null;
+        }
+    }
+    
+    playMoveSound() {
+        if (this.moveSound) {
+            // Reset the sound to the beginning and play
+            this.moveSound.currentTime = 0;
+            this.moveSound.play().catch(error => {
+                console.error('Failed to play move sound:', error);
+            });
+        }
+    }
+    
+    setSoundVolume(volume) {
+        this.soundVolume = Math.max(0, Math.min(1, volume));
+        if (this.moveSound) {
+            this.moveSound.volume = this.soundVolume;
         }
     }
 }

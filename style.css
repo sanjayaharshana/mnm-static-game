@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #8B0000 0%, #FFD700 50%, #006400 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -31,7 +31,7 @@ body {
 .game-header h1 {
     font-size: 2.5rem;
     margin-bottom: 20px;
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+    background: linear-gradient(45deg, #FF0000, #FFD700, #00FF00, #0000FF, #FFA500, #800080, #8B4513, #FFFFFF);
     background-size: 400% 400%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -53,7 +53,7 @@ body {
 }
 
 .score-container, .moves-container, .timer-container {
-    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    background: linear-gradient(45deg, #8B0000, #FFD700);
     padding: 10px 20px;
     border-radius: 25px;
     color: white;
@@ -85,7 +85,7 @@ body {
 }
 
 .reset-btn {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: linear-gradient(45deg, #8B0000, #FFD700);
     color: white;
     border: none;
     padding: 12px 30px;
@@ -95,6 +95,29 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    margin-right: 10px;
+}
+
+.music-btn {
+    background: linear-gradient(45deg, #006400, #32CD32);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.music-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.music-btn.muted {
+    background: linear-gradient(45deg, #666666, #999999);
 }
 
 .reset-btn:hover {
@@ -134,6 +157,8 @@ body {
     position: relative;
     overflow: hidden;
     will-change: transform;
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 .candy::before {
@@ -201,12 +226,8 @@ body {
 
 @keyframes fallAnimation {
     0% { 
-        transform: translateY(-100px); 
-        opacity: 0; 
-    }
-    50% {
-        transform: translateY(-50px);
-        opacity: 0.7;
+        transform: translateY(-50px); 
+        opacity: 0.8; 
     }
     100% { 
         transform: translateY(0); 
@@ -221,11 +242,11 @@ body {
 
 @keyframes newCandyAnimation {
     0% { 
-        transform: scale(0) rotate(180deg); 
+        transform: scale(0) rotate(90deg); 
         opacity: 0;
     }
     50% {
-        transform: scale(1.2) rotate(90deg);
+        transform: scale(1.1) rotate(45deg);
         opacity: 0.8;
     }
     100% { 
@@ -234,13 +255,15 @@ body {
     }
 }
 
-/* Candy colors */
-.candy.red { background: linear-gradient(45deg, #ff6b6b, #ee5a52); }
-.candy.blue { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
-.candy.green { background: linear-gradient(45deg, #96ceb4, #7bc95f); }
-.candy.yellow { background: linear-gradient(45deg, #feca57, #ff9ff3); }
-.candy.purple { background: linear-gradient(45deg, #a55eea, #8b5cf6); }
-.candy.orange { background: linear-gradient(45deg, #fd79a8, #fdcb6e); }
+/* M&M Chocolate colors */
+.candy.red { background: linear-gradient(45deg, #FF0000, #DC143C); }
+.candy.yellow { background: linear-gradient(45deg, #FFD700, #FFA500); }
+.candy.green { background: linear-gradient(45deg, #00FF00, #32CD32); }
+.candy.blue { background: linear-gradient(45deg, #0000FF, #4169E1); }
+.candy.orange { background: linear-gradient(45deg, #FFA500, #FF8C00); }
+.candy.purple { background: linear-gradient(45deg, #800080, #9932CC); }
+.candy.brown { background: linear-gradient(45deg, #8B4513, #A0522D); }
+.candy.white { background: linear-gradient(45deg, #FFFFFF, #F5F5F5); color: #333; }
 
 .game-controls {
     text-align: center;
@@ -322,7 +345,7 @@ body {
 }
 
 .popup-content {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #8B0000 0%, #FFD700 50%, #006400 100%);
     border-radius: 25px;
     padding: 40px;
     text-align: center;
@@ -432,12 +455,12 @@ body {
 }
 
 .play-again-btn {
-    background: linear-gradient(45deg, #4ecdc4, #44a08d);
+    background: linear-gradient(45deg, #006400, #32CD32);
     color: white;
 }
 
 .share-btn {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+    background: linear-gradient(45deg, #8B0000, #DC143C);
     color: white;
 }
 
