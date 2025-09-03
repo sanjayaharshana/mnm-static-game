@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candy Crush Clone</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <h1>🍬 Candy Crush Clone 🍬</h1>
+            <div class="game-info">
+                <div class="score-container">
+                    <span class="score-label">Score:</span>
+                    <span class="score" id="score">0</span>
+                </div>
+                <div class="moves-container">
+                    <span class="moves-label">Moves:</span>
+                    <span class="moves" id="moves">0</span>
+                </div>
+                <div class="timer-container">
+                    <span class="timer-label">Time:</span>
+                    <span class="timer" id="timer">30</span>
+                </div>
+            </div>
+            <button class="reset-btn" id="resetBtn">New Game</button>
+        </header>
+        
+        <div class="game-board-container">
+            <div class="game-board" id="gameBoard"></div>
+        </div>
+        
+        <div class="game-controls">
+            <div class="instructions">
+                <p>Match 3 or more candies of the same color to score points!</p>
+                <p>Click and drag candies to swap them.</p>
+            </div>
+        </div>
+        
+        <!-- Winning Popup -->
+        <div class="winning-popup" id="winningPopup">
+            <div class="popup-content">
+                <div class="popup-header">
+                    <h2>🎉 Congratulations! 🎉</h2>
+                    <div class="stars-container">
+                        <div class="star">⭐</div>
+                        <div class="star">⭐</div>
+                        <div class="star">⭐</div>
+                    </div>
+                </div>
+                <div class="popup-body">
+                    <div class="score-display">
+                        <div class="final-score">
+                            <span class="score-label">Final Score:</span>
+                            <span class="score-value" id="finalScore">0</span>
+                        </div>
+                        <div class="final-moves">
+                            <span class="moves-label">Moves Used:</span>
+                            <span class="moves-value" id="finalMoves">0</span>
+                        </div>
+                        <div class="final-time">
+                            <span class="time-label">Time Left:</span>
+                            <span class="time-value" id="finalTime">30s</span>
+                        </div>
+                        <div class="efficiency">
+                            <span class="efficiency-label">Efficiency:</span>
+                            <span class="efficiency-value" id="efficiency">0</span>
+                        </div>
+                    </div>
+                    <div class="achievement">
+                        <div class="trophy">🏆</div>
+                        <p>You're a Candy Master!</p>
+                    </div>
+                </div>
+                <div class="popup-footer">
+                    <button class="play-again-btn" id="playAgainBtn">Play Again</button>
+                    <button class="share-btn" id="shareBtn">Share Score</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
